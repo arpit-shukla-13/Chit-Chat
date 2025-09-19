@@ -1,4 +1,3 @@
-// index.js
 require('dotenv').config();
 const express = require('express');
 const http = require('http');
@@ -33,7 +32,7 @@ const io = new Server(server, {
 });
 
 // Database Connection
-const MONGO_URI = 'mongodb+srv://Chit-Chat:Arpitchitchat@mysecuresharecluster.2cdw072.mongodb.net/chatingapp?retryWrites=true&w=majority&appName=MySecureShareCluster';
+const MONGO_URI = process.env.MONGO_URI; // Use environment variable
 mongoose.connect(MONGO_URI).then(() => console.log("MongoDB connected")).catch(err => console.log(err));
 
 // This object maps a userId to their current socketId
@@ -46,7 +45,10 @@ io.use((socket, next) => {
     return next(new Error('Authentication error: No token provided'));
   }
 
-  jwt.verify(token, 'yourSecretKey', (err, decoded) => {
+  // ## START: YAHAN BADLAV KIYA GAYA HAI ##
+  // Use the environment variable for verification, not a hardcoded string
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+ 
     if (err) {
       return next(new Error('Authentication error: Invalid token'));
     }
@@ -65,7 +67,6 @@ io.on('connection', (socket) => {
   socket.on('private_message', async ({ recipientId, text }) => {
     try {
       const senderId = socket.user.id;
-      // Note: New messages are isSeen: false by default from the schema
       const newMessage = new Message({ sender: senderId, recipient: recipientId, text: text });
       await newMessage.save();
 
@@ -94,28 +95,24 @@ io.on('connection', (socket) => {
     }
   });
 
-  // ## START: New handler for marking messages as seen ##
   socket.on('mark_messages_as_seen', async ({ senderId }) => {
     try {
         const recipientId = socket.user.id;
-        // Update all relevant messages in the database
         await Message.updateMany(
             { sender: senderId, recipient: recipientId, isSeen: false },
             { $set: { isSeen: true } }
         );
         
-        // Notify the original sender that their messages have been seen
         const senderSocketId = onlineUsers[senderId];
         if (senderSocketId) {
             io.to(senderSocketId).emit('messages_seen_by_recipient', { 
-                conversationPartnerId: recipientId // Let the sender know WHO saw the messages
+                conversationPartnerId: recipientId
             });
         }
     } catch (error) {
         console.error('Error marking messages as seen:', error);
     }
   });
-  // ## END: New handler ##
 
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.user.id);
@@ -128,3 +125,5 @@ const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+
