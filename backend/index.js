@@ -11,7 +11,10 @@ const Message = require('./models/Message');
 const User = require('./models/User');
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: "https://chitchatttt.netlify.app",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+}));
 
 // Middleware to parse JSON bodies from API requests
 app.use(express.json());
