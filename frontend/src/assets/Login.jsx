@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
 
 // Using inline SVG for the loader to avoid extra dependencies
 const LoaderIcon = () => (
@@ -25,7 +26,7 @@ const LoginPage = () => {
         setLoading(true);
         setError('');
         try {
-            const res = await axios.post('http://localhost:3001/api/auth/login', formData);
+            const res = await axios.post(`${API_BASE_URL}/api/auth/login`, formData);
             
             // Save token, username, AND userId to localStorage
             localStorage.setItem('token', res.data.token); 

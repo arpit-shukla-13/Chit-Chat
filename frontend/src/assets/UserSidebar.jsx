@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
 
 const UserSidebar = ({ onSelectUser }) => {
   const [users, setUsers] = useState([]);
@@ -8,7 +9,7 @@ const UserSidebar = ({ onSelectUser }) => {
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get('http://localhost:3001/api/users', {
+        const res = await axios.get(`${API_BASE_URL}/api/users`, {
           headers: {
             Authorization: `Bearer ${token}`, // Token ko header me bhejna zaroori hai
           },

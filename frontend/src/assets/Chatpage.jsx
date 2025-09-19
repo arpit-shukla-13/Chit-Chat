@@ -5,6 +5,7 @@ import io from 'socket.io-client';
 // Corrected import paths to remove file extension for bundler compatibility
 import ChatListSidebar from './ChatListSidebar';
 import NewMessageModal from './NewMessageModal';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
 
 // Using inline SVGs to avoid extra dependencies or build issues
 const SendIcon = () => (
@@ -48,7 +49,7 @@ const ChatPage = () => {
             navigate('/auth');
             return;
         }
-        const newSocket = io("http://localhost:3001", { auth: { token } });
+        const newSocket = io(API_BASE_URL, { auth: { token } });
         setSocket(newSocket);
         
         newSocket.on('online_users_update', (userIds) => setOnlineUserIds(userIds));
@@ -115,7 +116,7 @@ const ChatPage = () => {
     // Effect for fetching initial conversations
     useEffect(() => {
         if (token) {
-            axios.get('http://localhost:3001/api/conversations', { headers: { Authorization: `Bearer ${token}` } })
+            axios.get(`${API_BASE_URL}/api/conversations`, { headers: { Authorization: `Bearer ${token}` } })
                 .then(res => setConversations(res.data))
                 .catch(err => console.error('Failed to fetch conversations:', err));
         }
@@ -130,7 +131,7 @@ const ChatPage = () => {
         const user = conversation.otherUser;
         setSelectedUser(user);
         try {
-            const res = await axios.get(`http://localhost:3001/api/messages/${user._id}`, { headers: { Authorization: `Bearer ${token}` } });
+            const res = await axios.get(`${API_BASE_URL}/api/messages/${user._id}`, { headers: { Authorization: `Bearer ${token}` } });
             setMessageList(res.data);
 
             const hasUnread = res.data.some(msg => !msg.isSeen && msg.sender._id === user._id);

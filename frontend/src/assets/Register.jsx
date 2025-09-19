@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
 
 // We've replaced the react-icon with an inline SVG to remove the dependency issue.
 const LoaderIcon = () => (
@@ -23,7 +24,7 @@ const RegisterPage = ({ setAuthMode }) => {
         setError('');
         setSuccess('');
         try {
-            await axios.post('http://localhost:3001/api/auth/register', formData);
+            await axios.post(`${API_BASE_URL}/api/auth/register`, formData);
             setSuccess('Registration successful! Please login.');
             setTimeout(() => setAuthMode('login'), 2000);
         } catch (err) {
