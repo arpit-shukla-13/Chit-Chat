@@ -1,0 +1,41 @@
+Dependencies for both frontend and backend
+These folders can be very large and should never be committed.
+They are installed automatically using 'npm install'.
+/node_modules
+/frontend/node_modules
+/backend/node_modules
+
+Build output from the frontend
+This is the compiled, production-ready code. It's generated during deployment.
+/frontend/dist
+
+Environment variables
+These files contain sensitive information like database passwords and API keys.
+They should NEVER be shared on GitHub.
+.env
+.env.*
+!.env.example
+
+Log files
+These are generated during runtime and are not part of the source code.
+logs
+.log
+npm-debug.log
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+IDE and editor configuration files
+These are specific to a developer's local machine and don't belong in the repo.
+.vscode/
+.idea/
+*.suo
+.ntvs
+*.njsproj
+*.sln
+*.sw?
+
+Operating System generated files
+.DS_Store
+Thumbs.db
